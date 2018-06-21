@@ -27,7 +27,9 @@ class Graph:
         debug_vertex_6 = Vertex('t6', x=200, y=200)
         debug_vertex_7 = Vertex('t7', x=400, y=400)
         debug_vertex_8 = Vertex('t8', x=400, y=200)
-        debug_vertex_9 = Vertex('t8', x=200, y=420)
+        debug_vertex_9 = Vertex('t9', x=500, y=400)
+        debug_vertex_10 = Vertex('t10', x=500, y=300)
+        debug_vertex_11 = Vertex('t11', x=500, y=200)
 
         # CUBE SHAPE
         # VERT 1
@@ -77,7 +79,7 @@ class Graph:
         # vert @ index 2 -> edge 1
 
         self.vertexes.extend(
-            [debug_vertex_1, debug_vertex_2, debug_vertex_3, debug_vertex_4, debug_vertex_5, debug_vertex_6, debug_vertex_7, debug_vertex_8, debug_vertex_9])
+            [debug_vertex_1, debug_vertex_2, debug_vertex_3, debug_vertex_4, debug_vertex_5, debug_vertex_6, debug_vertex_7, debug_vertex_8, debug_vertex_9, debug_vertex_10, debug_vertex_11])
 
     def bfs(self, start):
         random_color = "#" + \
@@ -102,3 +104,10 @@ class Graph:
             queue.pop(0)  # TODO: look at collection.dequeue
 
         return found
+
+    def connectedComponents(self):
+        searched = []
+
+        for vertex in self.vertexes:
+            if vertex not in searched:
+                searched = self.bfs(vertex)

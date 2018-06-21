@@ -10,6 +10,7 @@ from graph import *
 '''
 TODO
 2. current implementation graph is square want it to scale on x y values plot_width=WIDTH, plot_height=HEIGHT https://stackoverflow.com/questions/21980662/how-to-change-size-of-bokeh-figure
+3. Change color of label to white when it the vertex is not white
 '''
 
 color_list = []
@@ -32,7 +33,7 @@ vertex_name = []
 # class instance made
 graph_data = Graph()
 graph_data.debug_create_test_data()
-graph_data.bfs(graph_data.vertexes[0])
+graph_data.connectedComponents()
 
 N = len(graph_data.vertexes)
 node_indices = list(range(N))
