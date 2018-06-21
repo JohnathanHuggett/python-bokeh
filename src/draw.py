@@ -10,6 +10,7 @@ from graph import *
 color_list = []
 start = []
 end = []
+# LABEL_FONT_SIZE = "10pt"
 
 # class instance made
 graph_data = Graph()
