@@ -7,7 +7,7 @@ class Edge:
 
 
 class Vertex:
-    def __init__(self, value, **pos):  # TODO test default args value = "default"
+    def __init__(self, value='default', **pos):  # TODO test default args value = "default"
         self.value = value
         self.color = 'white'
         self.pos = pos
@@ -111,3 +111,58 @@ class Graph:
         for vertex in self.vertexes:
             if vertex not in searched:
                 searched = self.bfs(vertex)
+
+    '''
+        # Creates a random graph
+    '''
+
+    def randomize(self, width, height, px_box, probability=0.6):
+        def connectVerts(v0, v1):
+            v0.edges.append(Edge(v1))
+            v1.edges.append(Edge(v0))
+
+        count = 0
+
+        # build a grid of verts
+        grid = []
+
+        for y in range(height):
+            row = []
+            for x in range(width):
+                v = Vertex()
+                v.value = 'v' + str(x) + ',' + str(y)
+                count += 1
+                v.value = 'v' + str(count)
+                row.append(v)
+
+            grid.append(row)
+
+        # Go through the grid randomly hooking up edges
+        for y in range(height):
+            for x in range(width):
+                # connect down
+                if y < height - 1:
+                    if random.uniform(0, 1) < probability:
+                        connectVerts(grid[y][x], grid[y + 1][x])
+
+                # connect right
+                if x < width - 1:
+                    if random.uniform(0, 1) < probability:
+                        connectVerts(grid[y][x], grid[y][x + 1])
+
+        # Last pass, set the x and y coordinates for drawing
+        box_buffer = 0.8
+        box_inner = px_box * box_buffer
+        box_inner_offset = (px_box - box_inner) / 2
+
+        for y in range(height):
+            for x in range(width):
+                grid[y][x].pos = dict(
+                    x=x * px_box + box_inner_offset +
+                    random.uniform(0, 1) * box_inner,
+                    y=y * px_box + box_inner_offset + random.uniform(0, 1) * box_inner)
+
+        # add everything in our grid to the vertexes in this Graph
+        for y in range(height):
+            for x in range(width):
+                self.vertexes.append(grid[y][x])

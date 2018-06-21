@@ -2,7 +2,7 @@ import math
 
 from bokeh.io import show, output_file
 from bokeh.plotting import figure, show, output_file
-from bokeh.models import GraphRenderer, StaticLayoutProvider, Circle, ColumnDataSource, Range1d, LabelSet, Label
+from bokeh.models import GraphRenderer, StaticLayoutProvider, Circle, ColumnDataSource, LabelSet, Label
 from bokeh.palettes import Spectral8
 
 from graph import *
@@ -32,7 +32,9 @@ vertex_name = []
 
 # class instance made
 graph_data = Graph()
-graph_data.debug_create_test_data()
+
+# graph_data.debug_create_test_data()
+graph_data.randomize(5, 4, 150, 0.6)
 graph_data.connectedComponents()
 
 N = len(graph_data.vertexes)
@@ -74,7 +76,6 @@ label_source = ColumnDataSource(data=dict(height=y,
 # Label position relative to the vertex it is associated with
 labels = LabelSet(x='weight', y='height', text='names', level='overlay',
                   source=label_source, render_mode='canvas', text_align="center", text_baseline="middle",)
-
 
 plot.scatter(x='weight', y='height', size=10, source=label_source)
 plot.add_layout(labels)
