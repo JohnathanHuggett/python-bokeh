@@ -7,12 +7,6 @@ from bokeh.palettes import Spectral8
 
 from graph import *
 
-'''
-TODO
-2. current implementation graph is square want it to scale on x y values plot_width=WIDTH, plot_height=HEIGHT https://stackoverflow.com/questions/21980662/how-to-change-size-of-bokeh-figure
-3. Change color of label to white when it the vertex is not white
-'''
-
 color_list = []
 
 # used for start and end point of edges
@@ -20,10 +14,12 @@ start = []
 end = []
 
 CIRCLE_SIZE = 25
-WIDTH = 640
-HEIGHT = 480
+PLOT_WIDTH = 640
+PLOT_HEIGHT = 480
+X_RANGE = 800
+Y_RANGE = 800
 
-# plots x,y coordinates for vertexes
+# plots x,y coordinates for vertexes and labels
 x = []
 y = []
 
@@ -60,7 +56,13 @@ for vertex in graph_data.vertexes:
         end.append(graph_data.vertexes.index(edge.destination))
 
 ### CHART SIZE ###
-plot = figure(x_range=(0, WIDTH), y_range=(0, HEIGHT), toolbar_location=None)
+plot = figure(
+    x_range=(-5, X_RANGE),
+    y_range=(-10, Y_RANGE),
+    toolbar_location=None,
+    plot_width=PLOT_WIDTH,
+    plot_height=PLOT_HEIGHT
+)
 
 '''
 #
@@ -69,22 +71,43 @@ plot = figure(x_range=(0, WIDTH), y_range=(0, HEIGHT), toolbar_location=None)
 '''
 
 # Label connects to vertexes
-label_source = ColumnDataSource(data=dict(height=y,
-                                          weight=x,
-                                          names=vertex_name))
+label_source = ColumnDataSource(
+    data=dict(height=y,
+              weight=x,
+              names=vertex_name)
+)
 
 # Label position relative to the vertex it is associated with
-labels = LabelSet(x='weight', y='height', text='names', level='overlay',
-                  source=label_source, render_mode='canvas', text_align="center", text_baseline="middle",)
+labels = LabelSet(
+    x='weight',
+    y='height',
+    text='names',
+    level='overlay',
+    source=label_source,
+    render_mode='canvas',
+    text_align="center",
+    text_baseline="middle",
+    text_color="white",
+    text_font_size="10pt"
+)
 
-plot.scatter(x='weight', y='height', size=10, source=label_source)
+plot.scatter(
+    x='weight',
+    y='height',
+    size=10,
+    source=label_source
+)
+
 plot.add_layout(labels)
 
 graph = GraphRenderer()
 
 graph.node_renderer.data_source.add(node_indices, 'index')
 graph.node_renderer.data_source.add(color_list, 'color')
-graph.node_renderer.glyph = Circle(size=CIRCLE_SIZE, fill_color='color')
+graph.node_renderer.glyph = Circle(
+    size=CIRCLE_SIZE,
+    fill_color='color'
+)
 
 # this is drawing edges from start to end
 graph.edge_renderer.data_source.data = dict(
