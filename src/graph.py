@@ -1,3 +1,6 @@
+import random
+
+
 class Edge:
     def __init__(self, destination):
         self.destination = destination
@@ -24,6 +27,7 @@ class Graph:
         debug_vertex_6 = Vertex('t6', x=200, y=200)
         debug_vertex_7 = Vertex('t7', x=400, y=400)
         debug_vertex_8 = Vertex('t8', x=400, y=200)
+        debug_vertex_9 = Vertex('t8', x=200, y=420)
 
         # CUBE SHAPE
         # VERT 1
@@ -73,4 +77,28 @@ class Graph:
         # vert @ index 2 -> edge 1
 
         self.vertexes.extend(
-            [debug_vertex_1, debug_vertex_2, debug_vertex_3, debug_vertex_4, debug_vertex_5, debug_vertex_6, debug_vertex_7, debug_vertex_8])
+            [debug_vertex_1, debug_vertex_2, debug_vertex_3, debug_vertex_4, debug_vertex_5, debug_vertex_6, debug_vertex_7, debug_vertex_8, debug_vertex_9])
+
+    def bfs(self, start):
+        random_color = "#" + \
+            ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+
+        queue = []
+        found = []
+
+        queue.append(start)
+        found.append(start)
+
+        start.color = random_color
+
+        while len(queue) > 0:
+            v = queue[0]
+            for edge in v.edges:
+                if edge.destination not in found:
+                    found.append(edge.destination)
+                    queue.append(edge.destination)
+                    edge.destination.color = random_color
+
+            queue.pop(0)  # TODO: look at collection.dequeue
+
+        return found

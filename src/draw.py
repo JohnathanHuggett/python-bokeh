@@ -7,14 +7,32 @@ from bokeh.palettes import Spectral8
 
 from graph import *
 
+'''
+TODO
+2. current implementation graph is square want it to scale on x y values plot_width=WIDTH, plot_height=HEIGHT https://stackoverflow.com/questions/21980662/how-to-change-size-of-bokeh-figure
+'''
+
 color_list = []
+
+# used for start and end point of edges
 start = []
 end = []
-# LABEL_FONT_SIZE = "10pt"
+
+CIRCLE_SIZE = 25
+WIDTH = 640
+HEIGHT = 480
+
+# plots x,y coordinates for vertexes
+x = []
+y = []
+
+# values of each vertex
+vertex_name = []
 
 # class instance made
 graph_data = Graph()
 graph_data.debug_create_test_data()
+graph_data.bfs(graph_data.vertexes[0])
 
 N = len(graph_data.vertexes)
 node_indices = list(range(N))
@@ -31,14 +49,15 @@ for i, vertex in enumerate(graph_data.vertexes):  # keeps track of value and ind
 # Code refactoried from above ( a little more costly )
 for vertex in graph_data.vertexes:
     color_list.append(vertex.color)
-    if (len(vertex.edges)):
-        for edge in vertex.edges:
-            start.append(graph_data.vertexes.index(vertex))
-            end.append(graph_data.vertexes.index(edge.destination))
+    x.append(vertex.pos['x'])
+    y.append(vertex.pos['y'])
+    vertex_name.append(vertex.value)
+    for edge in vertex.edges:
+        start.append(graph_data.vertexes.index(vertex))
+        end.append(graph_data.vertexes.index(edge.destination))
 
 ### CHART SIZE ###
-plot = figure(title='Graph Layout Demonstration', x_range=(0, 500), y_range=(0, 500),
-              tools='', toolbar_location=None)
+plot = figure(x_range=(0, WIDTH), y_range=(0, HEIGHT), toolbar_location=None)
 
 '''
 #
@@ -47,36 +66,28 @@ plot = figure(title='Graph Layout Demonstration', x_range=(0, 500), y_range=(0, 
 '''
 
 # Label connects to vertexes
-source = ColumnDataSource(data=dict(height=[v.pos['y'] for v in graph_data.vertexes],
-                                    weight=[v.pos['x']
-                                            for v in graph_data.vertexes],
-                                    names=[v.value for v in graph_data.vertexes]))
+label_source = ColumnDataSource(data=dict(height=y,
+                                          weight=x,
+                                          names=vertex_name))
 
 # Label position relative to the vertex it is associated with
 labels = LabelSet(x='weight', y='height', text='names', level='overlay',
-                  x_offset=-6, y_offset=-10, source=source, render_mode='canvas')
+                  source=label_source, render_mode='canvas', text_align="center", text_baseline="middle",)
 
 
-plot.scatter(x='weight', y='height', size=10, source=source)
+plot.scatter(x='weight', y='height', size=10, source=label_source)
 plot.add_layout(labels)
 
 graph = GraphRenderer()
 
 graph.node_renderer.data_source.add(node_indices, 'index')
 graph.node_renderer.data_source.add(color_list, 'color')
-graph.node_renderer.glyph = Circle(size=25, fill_color='color')
+graph.node_renderer.glyph = Circle(size=CIRCLE_SIZE, fill_color='color')
 
 # this is drawing edges from start to end
 graph.edge_renderer.data_source.data = dict(
     start=start,
     end=end)
-
-# print(start)
-# print(end)
-
-# plots x,y coordinates for vertexes
-x = [v.pos['x'] for v in graph_data.vertexes]
-y = [v.pos['y'] for v in graph_data.vertexes]
 
 graph_layout = dict(zip(node_indices, zip(x, y)))
 graph.layout_provider = StaticLayoutProvider(graph_layout=graph_layout)
